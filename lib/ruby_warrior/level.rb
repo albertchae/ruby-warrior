@@ -110,11 +110,16 @@ module RubyWarrior
     end
 
     def passed?
-      @floor.stairs_space.warrior?
+      @floor.stairs_space.warrior? && rescued_captives?
     end
 
     def failed?
-      !@floor.units.include?(warrior)
+      !@floor.units.include?(warrior) ||
+        (@floor.stairs_space.warrior? && !rescued_captives?)
+    end
+
+    def rescued_captives?
+      @floor.captives.empty?
     end
 
     def exists?

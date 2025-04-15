@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ruby Warrior</title>
+    <title>RubyKaigi Warrior 2025</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css"
@@ -16,42 +16,65 @@
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./tailwind.css" />
   </head>
-  <body>
-    <div id="app" class="w-full flex flex-col items-center">
-      <h1 class="text-red-900 text-4xl my-4 max-sm:my-2 dark:text-red-300">Ruby Warrior</h1>
-      <div id="intro" class="max-w-[400px] p-5">
-        <p>
-          This is a game designed to teach the Ruby language in a fun and interactive way.
+  <body class="group">
+    <div class="fixed top-0 left-0 w-full min-h-screen bg-black bg-opacity-30 z-0"></div>
+    <div id="gameOverlay" class="hidden fixed top-0 left-0 w-full min-h-screen bg-white bg-opacity-80 dark:bg-black dark:bg-opacity-60 z-0"></div>
+    <div id="app" class="w-full flex flex-col items-center z-10">
+      <div id="intro" class="max-w-[540px] p-5">
+        <h1 class="text-white text-6xl my-4 max-sm:my-2 text-center">RubyKaigi Warrior</h1>
+
+        <p class="text-xl text-white mt-10 text-center">
+          Learn Ruby language in a fun and interactive way
+          <br/>
+          and get a chance to win the
+          <a href="https://www.amazon.co.jp/Layered-Design-Ruby-Rails-Applications/dp/1801813787" target="_blank" class="inline-block hover:text-red-200 transition-colors">Layered Design for Ruby on Rails Applications</a> book!
         </p>
-        <p class="mt-2">
+
+        <form id="startForm" class="flex flex-col gap-4 mt-8">
+          <sl-input id="nameInput" label="Name yourself" class="text-white" required></sl-input>
+          <sl-select id="levelInput" label="Choose a level" required value="3" class="hidden">
+            <sl-option value="1">Beginner</sl-option>
+            <sl-option value="2">Intermediate</sl-option>
+            <sl-option value="3">Kaigi</sl-option>
+          </sl-select>
+          <sl-button id="startBtn" type="submit" class="start-button rounded">Start</sl-button>
+        </form>
+
+        <p class="mt-8 text-sm text-red-200">
+         The game is known to accidentally crash in Safari &lt;18.4 (both MacOS and iOS). We're sorry for that. Consider upgrading or using another browser.
+        </p>
+
+        <p class="mt-4 text-sm text-white">
           Based on the original terminal game by Ryan Bates:
-          <a href="https://github.com/ryanb/ruby-warrior" target="_blank" class="inline-flex flex-row items-center align-middle gap-1">
+          <a href="https://github.com/ryanb/ruby-warrior" target="_blank" class="inline-flex flex-row items-center align-middle gap-1 hover:text-red-200 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" stroke="none" class="w-4 h-4" data-slot="icon">
               <g buffered-rendering="static">
                 <path d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"></path>
               </g>
             </svg>
             <span>github.com/ryanb/ruby-warrior</span>
-          </a>
+          </a>.
         </p>
-        <form id="startForm" class="flex flex-col gap-4 mt-4">
-          <sl-input id="nameInput" label="Name yourself" required></sl-input>
-          <sl-select id="levelInput" label="Choose a level" required value="1">
-            <sl-option value="1">Beginner</sl-option>
-            <sl-option value="2">Intermediate</sl-option>
-          </sl-select>
-          <sl-button id="startBtn" type="submit" variant="primary">Start</sl-button>
-        </form>
+
+        <p class="mt-2 text-sm text-white">
+          Built with <a href="https://github.com/ruby/ruby.wasm" target="_blank" class="inline-block hover:text-red-200 transition-colors">ruby.wasm</a> by <a href="https://x.com/palkan_tula" target="_blank" class="inline-block hover:text-red-200 transition-colors">Vladimir Dementyev</a>.
+        </p>
       </div>
-      <div id="loading" class="flex flex-row gap-1 items-center justify-center hidden">
-        <h3>Loading...</h3>
-        <sl-spinner></sl-spinner>
+      <div id="loading" class="flex flex-col gap-1 items-center justify-center hidden">
+        <h1 class="text-white text-4xl mb-5">RubyKaigi Warrior</h1>
+        <div class="flex flex-row gap-1 items-center justify-center">
+          <h3>Loading...</h3>
+          <sl-spinner></sl-spinner>
+        </div>
       </div>
-      <div id="game" class="hidden w-full flex flex-row max-sm:flex-col p-5 max-sm:px-0">
+      <div id="game" class="hidden w-full flex flex-row max-sm:flex-col p-5 max-sm:px-0 max-sm:pt-0">
         <div class="sm:w-1/2 sm:min-w-[50%] max-sm:w-full relative flex-grow">
+          <h1 class="text-white text-4xl sm:ml-5 mb-2 sm:hidden text-center">RubyKaigi Warrior</h1>
           <div id="editor" class="w-full min-h-[500px] max-sm:min-h-[400px]"></div>
         </div>
         <div class="flex flex-col gap-1">
+          <h1 class="text-white text-4xl sm:ml-5 mb-2 max-sm:hidden">RubyKaigi Warrior</h1>
+
           <div class="flex flex-row items-center gap-5 relative sm:ml-5">
             <div class="flex flex-row absolute -top-4 gap-1 right-1">
               <sl-button id="runBtn" variant="primary" circle>
@@ -64,9 +87,14 @@
                 <sl-icon name="stop-circle" label="Interrupt"></sl-icon>
               </sl-button>
             </div>
-            <div id="turn" class="font-mono whitespace-pre-wrap p-2 w-full min-h-[100px] bg-purple-300 dark:bg-purple-900">- game stage -</div>
+            <sl-carousel id="turn" orientation="vertical" class="p-2 w-full bg-purple-300 dark:bg-purple-900 min-h-[150px] max-sm:min-h-[250px] max-sm:text-sm">
+              <sl-carousel-item class="h-full w-full">
+                <div class="font-mono whitespace-pre-wrap h-full w-full max-h-[320px] max-sm:max-h-[220px] overflow-y-scroll">-- game logs --
+                </div>
+              </sl-carousel-item>
+            </sl-carousel>
           </div>
-          <div id="readme" class="font-mono whitespace-pre-wrap min-h-[400px] px-5">
+          <div id="readme" class="font-mono whitespace-pre-wrap sm:min-h-[400px] px-5">
           </div>
         </div>
       </div>

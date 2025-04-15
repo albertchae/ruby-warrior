@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "vite": "^4.3.0-beta.2"
   },
   "dependencies": {

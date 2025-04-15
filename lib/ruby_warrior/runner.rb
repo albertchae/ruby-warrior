@@ -34,6 +34,7 @@ module RubyWarrior
       options.on("-t", "--time SECONDS", "Delay each turn by seconds") do |seconds|
         Config.delay = seconds.to_f
       end
+      options.on("--no-epic", "Do not switch to epic mode on finish") { Config.skip_epic = true }
       options.on("-h", "--help", "Show this message") do
         puts(options)
         exit

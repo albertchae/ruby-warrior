@@ -5,6 +5,7 @@ import { init as initEditor } from "./editor.js";
 const introEl = document.getElementById("intro");
 const loadingEl = document.getElementById("loading");
 const gameEl = document.getElementById("game");
+const gameOverlay = document.getElementById("gameOverlay");
 
 const editorEl = document.getElementById("editor");
 const readmeEl = document.getElementById("readme");
@@ -27,6 +28,7 @@ startForm.addEventListener("submit", async (e) => {
 
   loadingEl.classList.add("hidden");
   gameEl.classList.remove("hidden");
+  gameOverlay.classList.remove("hidden");
 
   const game = await start(vm, name, skillLevel);
 

@@ -93,9 +93,16 @@ module RubyWarrior
         else
           request_next_level
         end
+        if !next_level.exists?
+          UI.puts "\n\nRubyKaigi 2025 CODE PHRASE: MATZ IS THE ROCK ⛰️\n"
+          UI.puts "Come to the book store, say the phrase, and a get a copy of the book (while supplies last)"
+        end
       elsif current_level.failed?
         continue = false
         UI.puts "Sorry, you failed level #{current_level.number}. Change your script and try again."
+        if !current_level.rescued_captives?
+          UI.puts "You must rescue all captives to pass."
+        end
         if !Config.skip_input? && current_level.clue &&
              UI.ask("Would you like to read the additional clues for this level?")
           UI.puts current_level.clue.hard_wrap
@@ -117,7 +124,7 @@ module RubyWarrior
         if next_level.exists?
           prepare_next_level
           UI.puts "See the updated README in the rubywarrior/#{profile.directory_name} directory."
-        else
+        elsif !Config.skip_epic
           prepare_epic_mode
           UI.puts "Run rubywarrior again to play epic mode."
         end

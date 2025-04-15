@@ -1,7 +1,7 @@
 module RubyWarrior
   class Config
     class << self
-      attr_accessor :delay, :in_stream, :out_stream, :practice_level
+      attr_accessor :delay, :in_stream, :out_stream, :practice_level, :skip_epic
       attr_writer :path_prefix, :skip_input
 
       def path_prefix
@@ -13,7 +13,7 @@ module RubyWarrior
       end
 
       def reset
-        %i[@path_prefix @skip_input @delay @in_stream @out_stream @practice_level].each do |i|
+        %i[@path_prefix @skip_input @delay @in_stream @out_stream @practice_level @skip_epic].each do |i|
           remove_instance_variable(i) if instance_variable_defined?(i)
         end
       end

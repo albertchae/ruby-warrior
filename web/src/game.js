@@ -6,6 +6,8 @@ class OutputPrinter {
 
   constructor(el) {
     this.el = el;
+    this.currentItem = el.querySelector("sl-carousel-item:last-child div");
+    this.print("\n");
   }
 
   print(val) {
@@ -14,9 +16,16 @@ class OutputPrinter {
     if (this.IGNORE_PHRASES.test(val)) return;
 
     if (this.RESET_PHRASES.test(val)) {
-      this.el.innerText = "";
+      let classes = this.currentItem.getAttribute("class");
+      this.el.insertAdjacentHTML('beforeend', `<sl-carousel-item class="w-full h-full"><div>
+        </div></sl-carousel-item>`);
+      this.currentItem = this.el.querySelector("sl-carousel-item:last-child div");
+      this.currentItem.setAttribute("class", classes);
+      this.currentItem.textContent = val;
+      this.el.next();
+    } else {
+      this.currentItem.textContent += val;
     }
-    this.el.innerText += val;
   }
 
   puts(val) {
@@ -59,7 +68,7 @@ class Game {
     if (loaded) return;
 
     this.vm.eval(`
-      RubyWarrior::Runner.new(%w[-d /game], StdinStub.new(%w[y ${this.skillLevel} ${this.name}]), STDOUT).run
+      RubyWarrior::Runner.new(%w[-d /game --no-epic], StdinStub.new(%w[y ${this.skillLevel} ${this.name}]), STDOUT).run
     `);
 
     const output = this.vm.$output.flush();
@@ -78,7 +87,7 @@ class Game {
   }
 
   get playerrb() {
-    return this.vm.eval(`File.read("${this.gameDir}/player.rb")`).toString().replace(/\n+$/, '\n');
+    return this.vm.eval(`File.read("${this.gameDir}/player.rb")`).toString().trim();
   }
 
   get profile() {
@@ -94,35 +103,42 @@ class Game {
     window.$stdout = new OutputPrinter(output);
     window.$sleeper = this.sleeper = new Sleeper();
 
-    this.vm.eval(`
-      File.write("${this.gameDir}/player.rb", <<~'SRC'
-${input}
-      SRC
-      )
-      runner = RubyWarrior::Runner.new(%w[-d ${this.gameDir}], StdinStub.new(%w[y y]), ExternalStdout.new)
-      $game = runner.game
-      # we control the game from the JS side
-      $game.max_turns = 1
-      runner.run
-    `);
+    let passed = false;
 
-    let turnNum = 1;
+    try {
+      this.vm.eval(`
+        File.write("${this.gameDir}/player.rb", <<~'SRC'
+  ${input}
+        SRC
+        )
+        runner = RubyWarrior::Runner.new(%w[-d ${this.gameDir} --no-epic], StdinStub.new(%w[y y]), ExternalStdout.new)
+        $game = runner.game
+        # we control the game from the JS side
+        $game.max_turns = 1
+        runner.run
+      `);
 
-    // Turn loop
-    while(true) {
-      let done = this.vm.eval(`$game.current_level.failed? || $game.current_level.passed?`).toJS();
-      if (done) break;
+      let turnNum = 1;
 
-      await window.$sleeper.sleep()
+      // Turn loop
+      while(true) {
+        let done = this.vm.eval(`$game.current_level.failed? || $game.current_level.passed?`).toJS();
+        if (done) break;
 
-      if (this.stopped) return;
+        await window.$sleeper.sleep()
 
-      if (this.pausePromise) await this.pausePromise;
+        if (this.stopped) return;
 
-      this.vm.eval(`$game.resume_current_level(${turnNum++})`)
+        if (this.pausePromise) await this.pausePromise;
+
+        this.vm.eval(`$game.resume_current_level(${turnNum++})`)
+      }
+
+      passed = this.vm.eval(`$game.current_level.passed?`).toJS();
+    } catch(error) {
+      console.error(error);
+      window.$stdout.print(error.message);
     }
-
-    let passed = this.vm.eval(`$game.current_level.passed?`).toJS();
 
     this.save();
 
