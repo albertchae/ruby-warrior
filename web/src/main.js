@@ -2,6 +2,9 @@ import { start } from "./game.js";
 import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
+// const SHARE_ORIGIN = "https://codapi.org/embed/?sandbox=ruby&code=";
+const SHARE_ORIGIN = window.location.origin + "/share.html?code=";
+
 const introEl = document.getElementById("intro");
 const loadingEl = document.getElementById("loading");
 const gameEl = document.getElementById("game");
@@ -70,9 +73,7 @@ startForm.addEventListener("submit", async (e) => {
     );
     const buffer = await new Response(stream).arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-    const finalUrl =
-      "https://codapi.org/embed/?sandbox=ruby&code=" +
-      encodeURIComponent("data:;base64," + base64);
+    const finalUrl = SHARE_ORIGIN + encodeURIComponent("data:;base64," + base64);
 
     await navigator.clipboard.writeText(finalUrl);
 
