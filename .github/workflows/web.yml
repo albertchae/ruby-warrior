@@ -75,6 +75,9 @@ jobs:
       pages: write
       id-token: write
 
+    environment:
+      name: github-pages
+
     # Allow one concurrent deployment
     concurrency:
       group: "pages"
