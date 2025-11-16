@@ -36,6 +36,7 @@ startForm.addEventListener("submit", async (e) => {
   editor.setValue(game.playerrb.toString());
 
   const runBtn = document.getElementById("runBtn");
+  const shareBtn = document.getElementById("shareBtn");
   const turnOutput = document.getElementById("turn");
 
   runBtn?.addEventListener("click", async () => {
@@ -62,4 +63,18 @@ startForm.addEventListener("submit", async (e) => {
   pauseResumeBtn?.addEventListener("click", () => {
     game.pauseResume();
   });
+
+  shareBtn?.addEventListener("click", async () => {
+    const stream = new Blob([editor.getValue()]).stream().pipeThrough(
+      new CompressionStream("deflate-raw")
+    );
+    const buffer = await new Response(stream).arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    const finalUrl =
+      "https://codapi.org/embed/?sandbox=ruby&code=" +
+      encodeURIComponent("data:;base64," + base64);
+
+    window.open(finalUrl, "_blank");
+  });
+
 });
