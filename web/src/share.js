@@ -44,7 +44,21 @@ copyCodeBtn?.addEventListener("click", async () => {
   await navigator.clipboard.writeText(editor.getValue());
 });
 
-const copyUrlBtn = document.getElementById("copyUrlBtn");
-copyUrlBtn?.addEventListener("click", async () => {
+const shareUrlEl = document.getElementById("shareUrl");
+if (shareUrlEl) {
+  shareUrlEl.textContent = window.location.href;
+}
+
+const copyUrlIcon = document.getElementById("copyUrlIcon");
+copyUrlIcon?.addEventListener("click", async () => {
   await navigator.clipboard.writeText(window.location.href);
 });
+
+const qrcodeEl = document.getElementById("qrcode");
+if (qrcodeEl && typeof QRCode !== 'undefined') {
+  new QRCode(qrcodeEl, {
+    text: window.location.href,
+    width: 256,
+    height: 256,
+  });
+}
