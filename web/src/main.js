@@ -74,6 +74,8 @@ startForm.addEventListener("submit", async (e) => {
       "https://codapi.org/embed/?sandbox=ruby&code=" +
       encodeURIComponent("data:;base64," + base64);
 
+    await navigator.clipboard.writeText(finalUrl);
+
     window.open(finalUrl, "_blank");
   });
 
