@@ -93,10 +93,6 @@ module RubyWarrior
         else
           request_next_level
         end
-        if !next_level.exists?
-          UI.puts "\n\nRubyKaigi 2025 CODE PHRASE: MATZ IS THE ROCK ⛰️\n"
-          UI.puts "Come to the book store, say the phrase, and a get a copy of the book (while supplies last)"
-        end
       elsif current_level.failed?
         continue = false
         UI.puts "Sorry, you failed level #{current_level.number}. Change your script and try again."
