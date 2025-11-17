@@ -3,7 +3,7 @@ import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
 // const SHARE_ORIGIN = "https://codapi.org/embed/?sandbox=ruby&code=";
-const SHARE_ORIGIN = window.location.origin + "/share.html?code=";
+const SHARE_ORIGIN = new URL('share.html', window.location.href).href + "?code=";
 
 const introEl = document.getElementById("intro");
 const loadingEl = document.getElementById("loading");
