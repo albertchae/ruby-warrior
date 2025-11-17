@@ -57,6 +57,7 @@ startForm.addEventListener("submit", async (e) => {
 
   const runBtn = document.getElementById("runBtn");
   const shareBtn = document.getElementById("shareBtn");
+  const shareLocalBtn = document.getElementById("shareLocalBtn");
   const turnOutput = document.getElementById("turn");
 
   runBtn?.addEventListener("click", async () => {
@@ -121,6 +122,14 @@ startForm.addEventListener("submit", async (e) => {
 
   copyUrlIcon?.addEventListener("click", async () => {
     await navigator.clipboard.writeText(shareUrlEl.textContent);
+  });
+
+  shareLocalBtn?.addEventListener("click", async () => {
+    const shareHtmlUrl = new URL('share.html', window.location.href).href + "?code=";
+    const finalUrl = await generateCompressedShareUrl(editor.getValue(), shareHtmlUrl);
+
+    await navigator.clipboard.writeText(finalUrl);
+    window.open(finalUrl, "_blank");
   });
 
 });
