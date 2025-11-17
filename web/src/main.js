@@ -36,10 +36,13 @@ const skillLevelInput = document.getElementById("levelInput");
 
 // Initialize VM and populate homepage leaderboard
 let vm = null;
+const homepageLeaderboard = new Leaderboard(null, 'homepage-leaderboard-body', null);
+homepageLeaderboard.showLoading();
+
 (async () => {
   vm = await initVM();
-  const leaderboard = new Leaderboard(vm, 'homepage-leaderboard-body', null);
-  leaderboard.update();
+  homepageLeaderboard.vm = vm;
+  homepageLeaderboard.update();
 })();
 
 startForm.addEventListener("submit", async (e) => {

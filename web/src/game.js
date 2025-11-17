@@ -58,6 +58,20 @@ class Leaderboard {
     this.currentPlayerName = currentPlayerName;
   }
 
+  showLoading() {
+    const tbody = document.getElementById(this.tbodyId);
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 2;
+    cell.className = 'px-6 py-4 text-center text-sm text-gray-500';
+    cell.innerHTML = '<sl-spinner></sl-spinner> <span class="ml-2">Loading leaderboard...</span>';
+    row.appendChild(cell);
+    tbody.appendChild(row);
+  }
+
   update() {
     let playerRecords = []
 
