@@ -51,6 +51,78 @@ class Sleeper {
   }
 }
 
+class Leaderboard {
+  constructor(vm, tbodyId = 'leaderboard-body', currentPlayerName = null) {
+    this.vm = vm;
+    this.tbodyId = tbodyId;
+    this.currentPlayerName = currentPlayerName;
+  }
+
+  update() {
+    let playerRecords = []
+
+    for (let i = 0; i < localStorage.length; i++) {
+      let key = localStorage.key(i)
+      if (!key.startsWith('rw-')) continue;
+
+      let entry = localStorage.getItem(key)
+      const { gameDir, profile } = JSON.parse(entry);
+      playerRecords.push([gameDir, profile]);
+    }
+
+    let leaderboardEntries = []
+
+    for (let [gameDir, profile] of playerRecords) {
+      this.vm.eval(`
+      FileUtils.mkdir_p("${gameDir}")
+      File.write("${gameDir}/.profile", <<~'SRC'
+      ${profile}
+      SRC
+      )`)
+      leaderboardEntries.push({
+        name: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").warrior_name`).toJS(),
+        score: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").score`).toJS()
+      })
+    }
+    leaderboardEntries.sort((a, b) => b.score - a.score) // sort by highest score first
+
+    this.render(leaderboardEntries);
+  }
+
+  render(leaderboardEntries) {
+    const tbody = document.getElementById(this.tbodyId);
+    if (!tbody) return;
+
+    tbody.innerHTML = ''; // Clear existing rows
+
+    if (leaderboardEntries.length === 0) {
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 2;
+      cell.className = 'px-6 py-4 text-center text-sm text-gray-500 italic';
+      cell.textContent = 'Finish a level to get your score on the leaderboard!';
+      row.appendChild(cell);
+      tbody.appendChild(row);
+      return;
+    }
+
+    for (let leaderboardEntry of leaderboardEntries) {
+      const row = document.createElement('tr');
+      row.className = 'hover:bg-gray-50';
+      const nameCell = document.createElement('td');
+      nameCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300';
+      const isCurrentPlayer = this.currentPlayerName && leaderboardEntry.name === this.currentPlayerName;
+      nameCell.textContent = isCurrentPlayer ? `${leaderboardEntry.name} (you)` : leaderboardEntry.name;
+      const scoreCell = document.createElement('td');
+      scoreCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+      scoreCell.textContent = leaderboardEntry.score;
+      row.appendChild(nameCell);
+      row.appendChild(scoreCell);
+      tbody.appendChild(row);
+    }
+  }
+}
+
 class Game {
   constructor(vm, name, skillLevel) {
     this.vm = vm;
@@ -60,6 +132,7 @@ class Game {
     this.stopped = false;
     this.pausePromise = undefined;
     this.pauseResolver = undefined;
+    this.leaderboard = new Leaderboard(vm, 'leaderboard-body', name);
   }
 
   async start() {
@@ -95,48 +168,7 @@ class Game {
   }
 
   updateLeaderboard() {
-    let playerRecords = []
-
-    for (let i = 0; i < localStorage.length; i++) {
-      let key = localStorage.key(i)
-      let entry = localStorage.getItem(key)
-      const { gameDir, profile } = JSON.parse(entry);
-      playerRecords.push([gameDir, profile]);
-    }
-
-    let leaderboardEntries = []
-
-    for (let [gameDir, profile] of playerRecords) {
-      this.vm.eval(`
-      FileUtils.mkdir_p("${gameDir}")
-      File.write("${gameDir}/.profile", <<~'SRC'
-      ${profile}
-      SRC
-      )`)
-      leaderboardEntries.push({
-        name: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").warrior_name`).toJS(),
-        score: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").score`).toJS()
-      })
-    }
-    leaderboardEntries.sort((a, b) => b.score - a.score) // sort by highest score first
-
-    const tbody = document.getElementById('leaderboard-body');
-    tbody.innerHTML = ''; // Clear existing rows
-
-    for (let leaderboardEntry of leaderboardEntries) {
-      const row = document.createElement('tr');
-      row.className = 'hover:bg-gray-50';
-      const nameCell = document.createElement('td');
-      nameCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300';
-      const isCurrentPlayer = leaderboardEntry.name === this.name;
-      nameCell.textContent = isCurrentPlayer ? `${leaderboardEntry.name} (you)` : leaderboardEntry.name;
-      const scoreCell = document.createElement('td');
-      scoreCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
-      scoreCell.textContent = leaderboardEntry.score;
-      row.appendChild(nameCell);
-      row.appendChild(scoreCell);
-      tbody.appendChild(row);
-    }
+    this.leaderboard.update();
   }
 
   async play(input, output) {
@@ -255,6 +287,8 @@ SRC
     return this.name.replace(/\s/, "-");
   }
 }
+
+export { Leaderboard };
 
 export const start = async (vm, name, skillLevel) => {
   window.$vm = vm;

@@ -1,4 +1,4 @@
-import { start } from "./game.js";
+import { start, Leaderboard } from "./game.js";
 import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
@@ -34,6 +34,14 @@ const startForm = document.getElementById("startForm");
 const nameInput = document.getElementById("nameInput");
 const skillLevelInput = document.getElementById("levelInput");
 
+// Initialize VM and populate homepage leaderboard
+let vm = null;
+(async () => {
+  vm = await initVM();
+  const leaderboard = new Leaderboard(vm, 'homepage-leaderboard-body', null);
+  leaderboard.update();
+})();
+
 startForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = nameInput.value.trim();
@@ -43,7 +51,10 @@ startForm.addEventListener("submit", async (e) => {
   introEl.classList.add("hidden");
   loadingEl.classList.remove("hidden");
 
-  const vm = await initVM();
+  // Reuse VM if already initialized, otherwise initialize it now
+  if (!vm) {
+    vm = await initVM();
+  }
   const editor = initEditor(editorEl);
 
   loadingEl.classList.add("hidden");
