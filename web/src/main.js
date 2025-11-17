@@ -2,8 +2,25 @@ import { start } from "./game.js";
 import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
+// Generate share URL with compressed binary code (for share.html)
+async function generateCompressedShareUrl(code, baseUrl) {
+  const stream = new Blob([code]).stream().pipeThrough(
+    new CompressionStream("deflate-raw")
+  );
+  const buffer = await new Response(stream).arrayBuffer();
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  return baseUrl + encodeURIComponent("data:;base64," + base64);
+}
+
+// Generate share URL with simple base64 encoding (for runruby.dev)
+function generateBase64ShareUrl(code, baseUrl) {
+  const base64 = btoa(code);
+  return baseUrl + base64;
+}
+
 // const SHARE_ORIGIN = "https://codapi.org/embed/?sandbox=ruby&code=";
-const SHARE_ORIGIN = new URL('share.html', window.location.href).href + "?code=";
+// const SHARE_ORIGIN = new URL('share.html', window.location.href).href + "?code=";
+const SHARE_ORIGIN = "https://runruby.dev?code=";
 
 const introEl = document.getElementById("intro");
 const loadingEl = document.getElementById("loading");
@@ -68,12 +85,7 @@ startForm.addEventListener("submit", async (e) => {
   });
 
   shareBtn?.addEventListener("click", async () => {
-    const stream = new Blob([editor.getValue()]).stream().pipeThrough(
-      new CompressionStream("deflate-raw")
-    );
-    const buffer = await new Response(stream).arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-    const finalUrl = SHARE_ORIGIN + encodeURIComponent("data:;base64," + base64);
+    const finalUrl = generateBase64ShareUrl(editor.getValue(), SHARE_ORIGIN);
 
     await navigator.clipboard.writeText(finalUrl);
 
