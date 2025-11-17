@@ -84,12 +84,43 @@ startForm.addEventListener("submit", async (e) => {
     game.pauseResume();
   });
 
+  const qrCodeContainer = document.getElementById("qrCodeContainer");
+  const qrCodeEl = document.getElementById("qrcode");
+  const shareUrlEl = document.getElementById("shareUrl");
+  const closeQrBtn = document.getElementById("closeQrBtn");
+  const copyUrlIcon = document.getElementById("copyUrlIcon");
+
   shareBtn?.addEventListener("click", async () => {
     const finalUrl = generateBase64ShareUrl(editor.getValue(), SHARE_ORIGIN);
 
-    await navigator.clipboard.writeText(finalUrl);
+    // Clear previous QR code
+    qrCodeEl.innerHTML = "";
 
-    window.open(finalUrl, "_blank");
+    // Generate new QR code
+    if (typeof QRCode !== 'undefined') {
+      new QRCode(qrCodeEl, {
+        text: finalUrl,
+        width: 256,
+        height: 256,
+      });
+    }
+
+    // Display the URL
+    shareUrlEl.textContent = finalUrl;
+
+    // Show the QR code container
+    qrCodeContainer?.classList.remove("hidden");
+
+    // Copy to clipboard
+    await navigator.clipboard.writeText(finalUrl);
+  });
+
+  closeQrBtn?.addEventListener("click", () => {
+    qrCodeContainer?.classList.add("hidden");
+  });
+
+  copyUrlIcon?.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(shareUrlEl.textContent);
   });
 
 });

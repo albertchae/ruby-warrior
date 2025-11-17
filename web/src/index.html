@@ -12,6 +12,7 @@
       type="module"
       src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"
     ></script>
+    <script src="https://davidshimjs.github.io/qrcodejs/qrcode.min.js"></script>
     <script type="module" src="./main.js"></script>
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./tailwind.css" />
@@ -107,6 +108,19 @@
                 </div>
               </sl-carousel-item>
             </sl-carousel>
+          </div>
+          <div id="qrCodeContainer" class="hidden flex flex-col items-center gap-4 px-5 mb-4">
+            <div class="flex flex-row items-center justify-center gap-2 w-full relative">
+              <h3 class="text-white text-lg text-center">Save your code</h3>
+              <sl-button id="closeQrBtn" variant="danger" size="small" circle class="absolute right-0">
+                <sl-icon name="x-lg" label="Close"></sl-icon>
+              </sl-button>
+            </div>
+            <div id="qrcode" class="bg-white p-3 rounded-lg shadow-lg"></div>
+            <div class="flex flex-row items-center gap-3 bg-white bg-opacity-90 px-4 py-2 rounded-full shadow-md">
+              <span id="shareUrl" class="text-black text-xs font-mono max-w-xs truncate"></span>
+              <sl-icon name="clipboard" id="copyUrlIcon" class="text-green-600 cursor-pointer hover:text-green-800 flex-shrink-0" style="font-size: 1.2rem;"></sl-icon>
+            </div>
           </div>
           <div id="readme" class="font-mono whitespace-pre-wrap sm:min-h-[400px] px-5">
           </div>
