@@ -118,10 +118,7 @@
                 <sl-icon name="stop-circle" label="Interrupt"></sl-icon>
               </sl-button>
               <sl-button id="shareBtn" variant="success" circle>
-                <sl-icon name="share" label="Share (RunRuby)"></sl-icon>
-              </sl-button>
-              <sl-button id="shareLocalBtn" variant="success" circle>
-                <sl-icon name="qr-code" label="Share (Local)"></sl-icon>
+                <sl-icon name="qr-code" label="Share"></sl-icon>
               </sl-button>
             </div>
             <sl-carousel id="turn" orientation="vertical" class="p-2 w-full bg-purple-300 dark:bg-purple-900 min-h-[150px] max-sm:min-h-[250px] max-sm:text-sm">
@@ -139,8 +136,8 @@
               </sl-button>
             </div>
             <div id="qrcode" class="bg-white p-3 rounded-lg shadow-lg"></div>
-            <div class="flex flex-row items-center gap-3 bg-white bg-opacity-90 px-4 py-2 rounded-full shadow-md">
-              <span id="shareUrl" class="text-black text-xs font-mono max-w-xs truncate"></span>
+            <div class="flex flex-row items-start gap-3 bg-white bg-opacity-90 px-4 py-2 rounded-lg shadow-md max-w-full">
+              <span id="shareUrl" class="text-black text-xs font-mono break-all"></span>
               <sl-icon name="clipboard" id="copyUrlIcon" class="text-green-600 cursor-pointer hover:text-green-800 flex-shrink-0" style="font-size: 1.2rem;"></sl-icon>
             </div>
           </div>

@@ -2,7 +2,8 @@ import { start, Leaderboard } from "./game.js";
 import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
-// Generate share URL with compressed binary code (for share.html)
+// UNUSED: Generate share URL with compressed binary code (would allow ~3-5x more Ruby code in QR codes)
+// To use this, the page at baseUrl needs to implement decompression logic
 async function generateCompressedShareUrl(code, baseUrl) {
   const stream = new Blob([code]).stream().pipeThrough(
     new CompressionStream("deflate-raw")
@@ -18,8 +19,6 @@ function generateBase64ShareUrl(code, baseUrl) {
   return baseUrl + base64;
 }
 
-// const SHARE_ORIGIN = "https://codapi.org/embed/?sandbox=ruby&code=";
-// const SHARE_ORIGIN = new URL('share.html', window.location.href).href + "?code=";
 const SHARE_ORIGIN = "https://runruby.dev?code=";
 
 const introEl = document.getElementById("intro");
@@ -71,7 +70,6 @@ startForm.addEventListener("submit", async (e) => {
 
   const runBtn = document.getElementById("runBtn");
   const shareBtn = document.getElementById("shareBtn");
-  const shareLocalBtn = document.getElementById("shareLocalBtn");
   const turnOutput = document.getElementById("turn");
 
   runBtn?.addEventListener("click", async () => {
@@ -112,12 +110,22 @@ startForm.addEventListener("submit", async (e) => {
     qrCodeEl.innerHTML = "";
 
     // Generate new QR code
-    if (typeof QRCode !== 'undefined') {
-      new QRCode(qrCodeEl, {
-        text: finalUrl,
-        width: 256,
-        height: 256,
-      });
+    try {
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrCodeEl, {
+          text: finalUrl,
+          width: 400,
+          height: 400,
+          correctLevel: QRCode.CorrectLevel.L, // Use Low error correction for more data capacity
+        });
+      }
+    } catch (error) {
+      console.error("Failed to generate QR code:", error);
+      qrCodeEl.innerHTML = `<div class="bg-red-100 text-red-800 p-4 rounded-lg text-center">
+        <p class="font-bold mb-2">QR Code Too Large</p>
+        <p class="text-sm">Your code is too large for a QR code (${finalUrl.length} characters).</p>
+        <p class="text-sm mt-2">Please copy the URL below or take a picture of your code directly instead.</p>
+      </div>`;
     }
 
     // Display the URL
@@ -127,7 +135,11 @@ startForm.addEventListener("submit", async (e) => {
     qrCodeContainer?.classList.remove("hidden");
 
     // Copy to clipboard
-    await navigator.clipboard.writeText(finalUrl);
+    try {
+      await navigator.clipboard.writeText(finalUrl);
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+    }
   });
 
   closeQrBtn?.addEventListener("click", () => {
@@ -136,14 +148,6 @@ startForm.addEventListener("submit", async (e) => {
 
   copyUrlIcon?.addEventListener("click", async () => {
     await navigator.clipboard.writeText(shareUrlEl.textContent);
-  });
-
-  shareLocalBtn?.addEventListener("click", async () => {
-    const shareHtmlUrl = new URL('share.html', window.location.href).href + "?code=";
-    const finalUrl = await generateCompressedShareUrl(editor.getValue(), shareHtmlUrl);
-
-    await navigator.clipboard.writeText(finalUrl);
-    window.open(finalUrl, "_blank");
   });
 
 });
