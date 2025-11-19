@@ -32,7 +32,7 @@
         </p>
 
         <form id="startForm" class="flex flex-col gap-4 mt-8">
-          <sl-input id="nameInput" label="Name yourself" class="text-white" required></sl-input>
+          <sl-input id="nameInput" label="Name yourself" class="text-white" autocomplete="off" required></sl-input>
           <sl-select id="levelInput" label="Choose a level" required value="4" class="hidden">
             <sl-option value="1">Beginner</sl-option>
             <sl-option value="2">Intermediate</sl-option>
@@ -154,7 +154,7 @@
       <sl-dialog id="restartDialog" label="Restart Game" class="text-gray-900">
         <p class="mb-4 text-gray-900">Are you sure you want to restart? You will not be able to resume your game.</p>
         <p class="mb-2 text-gray-900">Type <strong>restart</strong> to confirm:</p>
-        <sl-input id="restartConfirmInput" placeholder="Type 'restart'"></sl-input>
+        <sl-input id="restartConfirmInput" placeholder="Type 'restart'" autocomplete="off"></sl-input>
         <div slot="footer" class="flex gap-2">
           <sl-button id="cancelRestartBtn" variant="default">Cancel</sl-button>
           <sl-button id="confirmRestartBtn" variant="danger" disabled>Restart</sl-button>
