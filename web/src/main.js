@@ -150,4 +150,29 @@ startForm.addEventListener("submit", async (e) => {
     await navigator.clipboard.writeText(shareUrlEl.textContent);
   });
 
+  // Restart button and dialog
+  const restartBtn = document.getElementById("restartBtn");
+  const restartDialog = document.getElementById("restartDialog");
+  const restartConfirmInput = document.getElementById("restartConfirmInput");
+  const cancelRestartBtn = document.getElementById("cancelRestartBtn");
+  const confirmRestartBtn = document.getElementById("confirmRestartBtn");
+
+  restartBtn?.addEventListener("click", () => {
+    restartConfirmInput.value = "";
+    confirmRestartBtn.disabled = true;
+    restartDialog.show();
+  });
+
+  restartConfirmInput?.addEventListener("input", () => {
+    confirmRestartBtn.disabled = restartConfirmInput.value.toLowerCase() !== "restart";
+  });
+
+  cancelRestartBtn?.addEventListener("click", () => {
+    restartDialog.hide();
+  });
+
+  confirmRestartBtn?.addEventListener("click", () => {
+    window.location.reload();
+  });
+
 });

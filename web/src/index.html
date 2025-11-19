@@ -103,6 +103,9 @@
               </tbody>
             </table>
           </div>
+          <div class="mt-4 mb-8">
+            <sl-button id="restartBtn" class="start-button rounded w-full">Restart Game</sl-button>
+          </div>
         </div>
         <div class="flex flex-col gap-1">
           <h1 class="text-white text-4xl sm:ml-5 mb-2 max-sm:hidden">SF🌁Ruby Warrior</h1>
@@ -146,6 +149,16 @@
           </div>
         </div>
       </div>
+
+      <sl-dialog id="restartDialog" label="Restart Game" class="text-gray-900">
+        <p class="mb-4 text-gray-900">Are you sure you want to restart? You will not be able to resume your game.</p>
+        <p class="mb-2 text-gray-900">Type <strong>restart</strong> to confirm:</p>
+        <sl-input id="restartConfirmInput" placeholder="Type 'restart'"></sl-input>
+        <div slot="footer" class="flex gap-2">
+          <sl-button id="cancelRestartBtn" variant="default">Cancel</sl-button>
+          <sl-button id="confirmRestartBtn" variant="danger" disabled>Restart</sl-button>
+        </div>
+      </sl-dialog>
       <div class="flex justify-end w-full p-4">
         <img src="./sfruby_letters_black.png" alt="SF Ruby" class="h-8 w-auto ml-auto">
       </div>
