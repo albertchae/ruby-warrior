@@ -52,6 +52,8 @@ class Sleeper {
 }
 
 class Leaderboard {
+  MAX_LEADERBOARD_ENTRIES = 10;
+
   constructor(vm, tbodyId = 'leaderboard-body', currentPlayerName = null) {
     this.vm = vm;
     this.tbodyId = tbodyId;
@@ -99,6 +101,7 @@ class Leaderboard {
       })
     }
     leaderboardEntries.sort((a, b) => b.score - a.score) // sort by highest score first
+    leaderboardEntries = leaderboardEntries.slice(0, this.MAX_LEADERBOARD_ENTRIES)
 
     this.render(leaderboardEntries);
   }
