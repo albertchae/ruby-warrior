@@ -1,5 +1,5 @@
 const encodeName = (name) => name.toUpperCase().replace(/\s/g, "-");
-export const cacheKey = (name, skillLevel) => `rw-${encodeName(name)}-${skillLevel}`;
+export const cacheKey = (name, levelNumber) => `rw-${encodeName(name)}-${levelNumber}`;
 
 export const getPlayerRecord = (key) => {
   const data = localStorage.getItem(key);

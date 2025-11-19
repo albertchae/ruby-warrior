@@ -152,10 +152,10 @@ class Leaderboard {
 }
 
 class Game {
-  constructor(vm, name, skillLevel) {
+  constructor(vm, name, levelNumber) {
     this.vm = vm;
     this.name = name;
-    this.skillLevel = skillLevel;
+    this.levelNumber = levelNumber;
     this.paused = false;
     this.stopped = false;
     this.pausePromise = undefined;
@@ -175,7 +175,7 @@ class Game {
     this.startTimeUnixMs = Date.now();
 
     this.vm.eval(`
-      RubyWarrior::Runner.new(%w[-d /game --no-epic], StdinStub.new(%w[y ${this.skillLevel} ${this.name}]), STDOUT).run
+      RubyWarrior::Runner.new(%w[-d /game --no-epic], StdinStub.new(%w[y ${this.levelNumber} ${this.name}]), STDOUT).run
     `);
 
     const output = this.vm.$output.flush();
@@ -275,7 +275,7 @@ class Game {
   }
 
   async load() {
-    const entry = getPlayerRecord(cacheKey(this.name, this.skillLevel));
+    const entry = getPlayerRecord(cacheKey(this.name, this.levelNumber));
 
     if (!entry) return false;
 
@@ -313,15 +313,15 @@ SRC
       scoredTimeUnixMs: Date.now(),
     };
 
-    setPlayerRecord(cacheKey(this.name, this.skillLevel), entry);
+    setPlayerRecord(cacheKey(this.name, this.levelNumber), entry);
   }
 }
 
 export { Leaderboard };
 
-export const start = async (vm, name, skillLevel) => {
+export const start = async (vm, name, levelNumber) => {
   window.$vm = vm;
-  const game = new Game(vm, name, skillLevel);
+  const game = new Game(vm, name, levelNumber);
   await game.start();
   game.updateLeaderboard()
   return game;

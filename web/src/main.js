@@ -32,7 +32,7 @@ const readmeEl = document.getElementById("readme");
 
 const startForm = document.getElementById("startForm");
 const nameInput = document.getElementById("nameInput");
-const skillLevelInput = document.getElementById("levelInput");
+const levelNumberInput = document.getElementById("levelInput");
 
 // Initialize VM and populate homepage leaderboard
 let vm = null;
@@ -48,13 +48,13 @@ homepageLeaderboard.showLoading();
 startForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = nameInput.value.trim();
-  const skillLevel = skillLevelInput.value;
-  if (!name || !skillLevel) return;
+  const levelNumber = levelNumberInput.value;
+  if (!name || !levelNumber) return;
 
   // Guarantee player name uniqueness. Even though the game supports resuming off a saved profile,
   // we will not allow more than one playthrough per name for simplified leaderboard handling.
   // Otherwise calculating time elapsed and preventing other users from resuming your game would require more work.
-  if (getPlayerRecord(cacheKey(name, skillLevel))) {
+  if (getPlayerRecord(cacheKey(name, levelNumber))) {
     nameInput.setCustomValidity("Name already taken, please enter a unique name for the leaderboard!");
     nameInput.reportValidity();
     return;
@@ -74,7 +74,7 @@ startForm.addEventListener("submit", async (e) => {
   gameEl.classList.remove("hidden");
   gameOverlay.classList.remove("hidden");
 
-  const game = await start(vm, name, skillLevel);
+  const game = await start(vm, name, levelNumber);
 
   readmeEl.innerText = game.readme;
   editor.setValue(game.playerrb.toString());
