@@ -247,6 +247,12 @@ class Game {
 
       passed = this.vm.eval(`$game.current_level.passed?`).toJS();
 
+      // On final level with --no-epic, profile.save is never called
+      // (normally happens in prepare_next_level or prepare_epic_mode)
+      if (passed && !this.vm.eval(`$game.next_level.exists?`).toJS()) {
+        this.vm.eval(`$game.profile.save`);
+      }
+
     } catch(error) {
       console.error(error);
       window.$stdout.print(error.message);
