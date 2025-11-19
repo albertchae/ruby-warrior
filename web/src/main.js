@@ -54,7 +54,9 @@ startForm.addEventListener("submit", async (e) => {
   // Guarantee player name uniqueness. Even though the game supports resuming off a saved profile,
   // we will not allow more than one playthrough per name for simplified leaderboard handling.
   // Otherwise calculating time elapsed and preventing other users from resuming your game would require more work.
-  if (getPlayerRecord(cacheKey(name, levelNumber))) {
+  // Bypass with DEBUG_RESUME query param for debugging/resuming
+  const debugResume = new URLSearchParams(window.location.search).has('DEBUG_RESUME');
+  if (!debugResume && getPlayerRecord(cacheKey(name, levelNumber))) {
     nameInput.setCustomValidity("Name already taken, please enter a unique name for the leaderboard!");
     nameInput.reportValidity();
     return;
