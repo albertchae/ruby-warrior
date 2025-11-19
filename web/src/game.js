@@ -1,3 +1,5 @@
+import { cacheKey, getPlayerRecord, setPlayerRecord, getAllPlayerRecords } from './storage.js';
+
 class OutputPrinter {
   RESET_PHRASES =
     /(- turn \d+ -|Success! You have found the stairs|CONGRATULATIONS!|Sorry, you failed level)/;
@@ -75,20 +77,10 @@ class Leaderboard {
   }
 
   update() {
-    let playerRecords = []
-
-    for (let i = 0; i < localStorage.length; i++) {
-      let key = localStorage.key(i)
-      if (!key.startsWith('rw-')) continue;
-
-      let entry = localStorage.getItem(key)
-      const { gameDir, profile } = JSON.parse(entry);
-      playerRecords.push([gameDir, profile]);
-    }
-
+    const playerRecords = getAllPlayerRecords();
     let leaderboardEntries = []
 
-    for (let [gameDir, profile] of playerRecords) {
+    for (let { gameDir, profile } of playerRecords) {
       this.vm.eval(`
       FileUtils.mkdir_p("${gameDir}")
       File.write("${gameDir}/.profile", <<~'SRC'
@@ -258,11 +250,11 @@ class Game {
   }
 
   async load() {
-    const entry = localStorage.getItem(this.cacheKey);
+    const entry = getPlayerRecord(cacheKey(this.name, this.skillLevel));
 
     if (!entry) return false;
 
-    const { gameDir, profile, playerrb, readme } = JSON.parse(entry);
+    const { gameDir, profile, playerrb, readme } = entry;
 
     this.gameDir = gameDir;
 
@@ -293,15 +285,7 @@ SRC
       readme: this.readme,
     };
 
-    localStorage.setItem(this.cacheKey, JSON.stringify(entry));
-  }
-
-  get cacheKey() {
-    return `rw-${this.encodedName}-${this.skillLevel}`;
-  }
-
-  get encodedName() {
-    return this.name.replace(/\s/, "-");
+    setPlayerRecord(cacheKey(this.name, this.skillLevel), entry);
   }
 }
 
