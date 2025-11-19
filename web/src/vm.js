@@ -68,6 +68,10 @@ export default async function initVM() {
     end
 
     class ExternalStdout
+      def write(val)
+        JS.global[:$stdout].print(val)
+      end
+
       def print(val)
         JS.global[:$stdout].print(val)
       end
@@ -75,7 +79,11 @@ export default async function initVM() {
       def puts(val)
         JS.global[:$stdout].puts(val)
       end
+
+      def flush; end # noop
     end
+
+    $stdout = ExternalStdout.new
   `);
 
   console.log("Wasm app initialized");
