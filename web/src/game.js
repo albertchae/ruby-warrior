@@ -1,5 +1,12 @@
 import { cacheKey, getPlayerRecord, setPlayerRecord, getAllPlayerRecords } from './storage.js';
 
+function formatElapsedTime(ms) {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
 class OutputPrinter {
   RESET_PHRASES =
     /(- turn \d+ -|Success! You have found the stairs|CONGRATULATIONS!|Sorry, you failed level)/;
@@ -69,7 +76,7 @@ class Leaderboard {
     tbody.innerHTML = '';
     const row = document.createElement('tr');
     const cell = document.createElement('td');
-    cell.colSpan = 2;
+    cell.colSpan = 3;
     cell.className = 'px-6 py-4 text-center text-sm text-gray-500';
     cell.innerHTML = '<sl-spinner></sl-spinner> <span class="ml-2">Loading leaderboard...</span>';
     row.appendChild(cell);
@@ -80,7 +87,7 @@ class Leaderboard {
     const playerRecords = getAllPlayerRecords();
     let leaderboardEntries = []
 
-    for (let { gameDir, profile } of playerRecords) {
+    for (let { gameDir, profile, startTimeUnixMs, scoredTimeUnixMs } of playerRecords) {
       this.vm.eval(`
       FileUtils.mkdir_p("${gameDir}")
       File.write("${gameDir}/.profile", <<~'SRC'
@@ -89,10 +96,18 @@ class Leaderboard {
       )`)
       leaderboardEntries.push({
         name: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").warrior_name`).toJS(),
-        score: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").score`).toJS()
+        score: this.vm.eval(`RubyWarrior::Profile.load("${gameDir}/.profile").score`).toJS(),
+        elapsedMs: scoredTimeUnixMs - startTimeUnixMs
       })
     }
-    leaderboardEntries.sort((a, b) => b.score - a.score) // sort by highest score first
+    leaderboardEntries.sort((a, b) => {
+      // Sort by highest score first, then by fastest time as tiebreaker
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      } else {
+        return a.elapsedMs - b.elapsedMs;
+      }
+    })
     leaderboardEntries = leaderboardEntries.slice(0, this.MAX_LEADERBOARD_ENTRIES)
 
     this.render(leaderboardEntries);
@@ -107,7 +122,7 @@ class Leaderboard {
     if (leaderboardEntries.length === 0) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-      cell.colSpan = 2;
+      cell.colSpan = 3;
       cell.className = 'px-6 py-4 text-center text-sm text-gray-500 italic';
       cell.textContent = 'Finish a level to get your score on the leaderboard!';
       row.appendChild(cell);
@@ -123,10 +138,14 @@ class Leaderboard {
       const isCurrentPlayer = this.currentPlayerName && leaderboardEntry.name === this.currentPlayerName;
       nameCell.textContent = isCurrentPlayer ? `${leaderboardEntry.name} (you)` : leaderboardEntry.name;
       const scoreCell = document.createElement('td');
-      scoreCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+      scoreCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-300';
       scoreCell.textContent = leaderboardEntry.score;
+      const timeCell = document.createElement('td');
+      timeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+      timeCell.textContent = formatElapsedTime(leaderboardEntry.elapsedMs);
       row.appendChild(nameCell);
       row.appendChild(scoreCell);
+      row.appendChild(timeCell);
       tbody.appendChild(row);
     }
   }
