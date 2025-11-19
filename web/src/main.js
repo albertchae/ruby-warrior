@@ -1,4 +1,5 @@
 import { start, Leaderboard } from "./game.js";
+import { cacheKey, getPlayerRecord } from "./storage.js";
 import initVM from "./vm.js";
 import { init as initEditor } from "./editor.js";
 
@@ -49,6 +50,16 @@ startForm.addEventListener("submit", async (e) => {
   const name = nameInput.value.trim();
   const skillLevel = skillLevelInput.value;
   if (!name || !skillLevel) return;
+
+  // Guarantee player name uniqueness. Even though the game supports resuming off a saved profile,
+  // we will not allow more than one playthrough per name for simplified leaderboard handling.
+  // Otherwise calculating time elapsed and preventing other users from resuming your game would require more work.
+  if (getPlayerRecord(cacheKey(name, skillLevel))) {
+    nameInput.setCustomValidity("Name already taken, please enter a unique name for the leaderboard!");
+    nameInput.reportValidity();
+    return;
+  }
+  nameInput.setCustomValidity("");
 
   introEl.classList.add("hidden");
   loadingEl.classList.remove("hidden");

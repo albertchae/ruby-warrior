@@ -1,4 +1,4 @@
-const encodeName = (name) => name.replace(/\s/, "-");
+const encodeName = (name) => name.toUpperCase().replace(/\s/g, "-");
 export const cacheKey = (name, skillLevel) => `rw-${encodeName(name)}-${skillLevel}`;
 
 export const getPlayerRecord = (key) => {
