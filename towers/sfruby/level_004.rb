@@ -4,8 +4,8 @@
 # | C |
 #  ---
 
-description "Oh, you're in a large (2D) dungeon! You feel slime on all sides, you're surrounded!"
-tip "Call warrior.bind!(direction) to bind an enemy to keep him from attacking. Bound enemies look like captives. You can walk!, attack! etc in multiple directions (:forward, :left, :right, :backward). You are beginning this level facing east."
+description "You climb up the stairs to find yourself in a large (2D) cellblock on Alcatraz! You feel slime on all sides. You're surrounded!"
+tip "Call warrior.bind!(direction) to bind an enemy to keep him from attacking. Bound enemies look like captives. You can walk!, attack! etc in multiple directions (:forward, :left, :right, :backward). You are beginning this level facing east. You can call warrior.feel(direction).wall? to identify walls."
 clue "Call warrior.feel(direction).enemy? to know if there is an enemy. Count the number of enemies around you. Bind an enemy if there are two or more."
 
 time_bonus 50
