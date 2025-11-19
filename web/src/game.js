@@ -149,6 +149,12 @@ class Game {
 
     if (loaded) return;
 
+    // This records the first time a game is started
+    // Because SF Ruby warrior won't allow resuming paused games, we won't be accounting for pause time
+    // Date.now() would work better for resuming paused games except that it is susceptible 
+    // to system clock changes. Since we don't care about pausing, maybe use performance.now() instead
+    this.startTimeUnixMs = Date.now();
+
     this.vm.eval(`
       RubyWarrior::Runner.new(%w[-d /game --no-epic], StdinStub.new(%w[y ${this.skillLevel} ${this.name}]), STDOUT).run
     `);
@@ -254,9 +260,10 @@ class Game {
 
     if (!entry) return false;
 
-    const { gameDir, profile, playerrb, readme } = entry;
+    const { gameDir, profile, playerrb, readme, startTimeUnixMs } = entry;
 
     this.gameDir = gameDir;
+    this.startTimeUnixMs = startTimeUnixMs;
 
     this.vm.eval(`
 FileUtils.mkdir_p("${this.gameDir}")
@@ -283,6 +290,8 @@ SRC
       profile: this.profile,
       playerrb: this.playerrb,
       readme: this.readme,
+      startTimeUnixMs: this.startTimeUnixMs,
+      scoredTimeUnixMs: Date.now(),
     };
 
     setPlayerRecord(cacheKey(this.name, this.skillLevel), entry);
