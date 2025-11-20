@@ -23,6 +23,7 @@ function generateBase64ShareUrl(code, baseUrl) {
 const SHARE_ORIGIN = "https://runruby.dev?code=";
 
 const introEl = document.getElementById("intro");
+const introHeaderEl = document.getElementById("intro-header");
 const loadingEl = document.getElementById("loading");
 const gameEl = document.getElementById("game");
 const gameOverlay = document.getElementById("gameOverlay");
@@ -64,6 +65,7 @@ startForm.addEventListener("submit", async (e) => {
   nameInput.setCustomValidity("");
 
   introEl.classList.add("hidden");
+  introHeaderEl.classList.add("hidden");
   loadingEl.classList.remove("hidden");
 
   // Reuse VM if already initialized, otherwise initialize it now
