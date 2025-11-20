@@ -35,6 +35,13 @@ const startForm = document.getElementById("startForm");
 const nameInput = document.getElementById("nameInput");
 const levelNumberInput = document.getElementById("levelInput");
 
+// Show Safari warning if user is on Safari or iOS
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+if (isSafari || isIOS) {
+  document.getElementById("safariWarning")?.classList.remove("hidden");
+}
+
 // Initialize VM and populate homepage leaderboard
 let vm = null;
 const homepageLeaderboard = new Leaderboard(null, 'homepage-leaderboard-body', null);
