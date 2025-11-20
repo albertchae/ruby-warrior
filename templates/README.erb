@@ -18,16 +18,40 @@ Warrior Abilities:
   warrior.<%= name %>
     <%= ability.description %>
 <%- end -%>
+
+
+
+Space predicates callable on return value of warrior.feel:
+
+ space.empty?
+   If true, this means that nothing (except maybe stairs) is at this location and you can walk here.
+ 
+ space.stairs?
+   Determine if stairs are at that location
+ 
+ space.enemy?
+   Determine if an enemy unit is at this location.
+ 
+ space.captive?
+   Determine if a captive is at this location.
+ 
+ space.wall?
+   Returns true if this is the edge of the level. You can't walk here.
+ 
+ space.ticking?
+   Returns true if this space contains a bomb which will explode in time.
+ 
+ space.golem?
+   Returns true if a golem is occupying this space.
+
+
 <%- if level.warrior.has_golem? -%>
-
-
 Golem Abilities:
 <%- level.warrior.base_golem.abilities.each do |name, ability| -%>
 
   golem.<%= name %>
     <%= ability.description %>
 <%- end -%>
+
 <%- end -%>
-
-
 When you're done editing player.rb, hit the "Play" button to start the game. You can also use the "Pause" button to pause/resume the game and "Stop" button to terminate it (and start over).
